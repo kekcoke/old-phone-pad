@@ -1,0 +1,28 @@
+# NET/[Core]
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+*.log
+*.pdb
+*.suo
+*.user
+
+# Git
+*.git
+
+# Rider/VSCode
+.idea/
+.vscode/
+
+# NuGet packages
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# Temp
+*.tmp
+*.bak
+*.swp
