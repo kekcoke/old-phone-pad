@@ -40,7 +40,44 @@ namespace OldPhonePad {
 
         private static string ConvertNumpadInput(string input)
         {
+
             return $"{input}";
+        }
+
+        private Dictionary<string, string> NumpadDictionary()
+        {
+            return new Dictionary<string, string>
+            {
+                { "1", "1" },
+                { "2", "ABC" },
+                { "22", "B" },
+                { "222", "C" },
+                { "3", "DEF" },
+                { "33", "E" },
+                { "333", "F" },
+                { "4", "GHI" },
+                { "44", "H" },
+                { "444", "I" },
+                { "5", "JKL" },
+                { "55", "K" },
+                { "555", "L" },
+                { "6", "MNO" },
+                { "66", "N" },
+                { "666", "O" },
+                { "7", "PQRS" },
+                { "77", "Q" },
+                { "777", "R" },
+                { "7777", "S" },
+                { "8", "TUV" },
+                { "88", "U" },
+                { "888", "V" },
+                { "9", "WXYZ" },
+                { "99", "X" },
+                { "999", "Y" },
+                { "9999", "Z" },
+                { "*", "*" },
+                { "#", "#" } 
+            };
         }
     }
 }
