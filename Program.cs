@@ -32,7 +32,15 @@ namespace OldPhonePad {
                     Console.WriteLine("Invalid input. Please enter only numbers, '#' or '*'.");
                     continue;
                 }
+
+                string convertedCharacter = ConvertNumpadInput(input);
+                Console.WriteLine(convertedCharacter);
             }
+        }
+
+        private static string ConvertNumpadInput(string input)
+        {
+            return $"{input}";
         }
     }
 }
