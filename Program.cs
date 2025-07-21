@@ -12,7 +12,7 @@ namespace OldPhonePad {
             while (true)
             {
                 Console.Write("Enter numpad number: ");
-                string validPattern = @"^[0-9#*]+$";
+                string validPattern = @"^[0-9#* ]+$";
                 string input = Console.ReadLine();
 
                 if (input.ToLower() == exitCommand)
