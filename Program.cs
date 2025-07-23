@@ -40,33 +40,108 @@ namespace OldPhonePad {
 
         public static string ConvertNumpadInput(string input)
         {
-            char[] delimiters = { ' ', '\t', '#' };
-            string[] numbersArray = input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-            string result = string.Empty;
+            // char[] delimiters = { ' ', '\t', '#' };
+            // string[] numbersArray = input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
             try
             {
                 var numpadDictionary = NumpadDictionary();
 
-                foreach (string number in numbersArray)
+                if (input.Length == 1)
                 {
-                    if (numpadDictionary.TryGetValue(number, out string character))
+                    return GetNumpadCharacter(input);
+                }
+
+                var left = 0;
+                var right = 1;
+                var result = string.Empty;
+
+                while (left < input.Length)
+                {
+                    // take char values of left and right
+                    // append token value until the next char is different
+                    // if the next char is the same, increment right
+                    // if the next char is different, check if the token exists in the dictionary
+                    // if it exists, append the value to the result
+                    // if it doesn't exist, throw an exception
+
+                    char currentChar = input[left];
+                
+                    // Check if we are at the end of the input
+                    bool isLastChar = left == input.Length; // 2-length input is a special case
+                    bool isLastCharNext = input.Length - 1 - right == 1;
+                    var token = new System.Text.StringBuilder();
+
+                    if (isLastChar)
                     {
-                        result += character;
+                        // if we are at the last character, we can break the loop
+                        Console.WriteLine($"Processing last character: {currentChar}");
+                        result += GetNumpadCharacter(currentChar.ToString());
+                        break;
                     }
                     else
                     {
-                        return $"Invalid input: '{number}' is not a valid numpad number.";
+                        char nextChar = input[right];
+
+                        token.Append(currentChar.ToString());
+
+                        while (currentChar.Equals(nextChar))
+                        {
+                            token.Append(nextChar.ToString());
+                            isLastCharNext = input.Length - 1 - right == 1;
+
+                            if (isLastCharNext)
+                            {
+                                break;
+                            }
+
+                            nextChar = input[++right];
+                        }
+                    }
+
+                    // we get here it means contiguous characters are complete
+                    var word = token.ToString();
+
+                    Console.WriteLine($"Processing token: {word}");
+                    if (numpadDictionary.TryGetValue(word, out string value))
+                    {
+                        result += value;
+
+                        // move left pointer next the right pointer
+                        // this is to avoid processing the same character again
+                        left = right;
+
+                        // avoid out of range exception. reset right pointer to the next character after the current token
+                        right = isLastCharNext ? left : left + 1;
+                        token.Clear(); // clear the token for the next iteration
+                        continue;
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"The input '{word}' is not a valid numpad input.");
                     }
                 }
+
+                return result;
             }
             catch (ArgumentException ex)
             {
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
                 return $"An error occurred while processing the input.";
             }
-
-            return result;
+        }
+        
+        public static string GetNumpadCharacter(string input)
+        {
+            var numpadDictionary = NumpadDictionary();
+            if (numpadDictionary.TryGetValue(input, out string value))
+            {
+                return value;
+            }
+            else
+            {
+                throw new ArgumentException($"The input '{input}' is not a valid numpad input.");
+            }
         }
 
         private static Dictionary<string, string> NumpadDictionary()
@@ -100,9 +175,9 @@ namespace OldPhonePad {
                 { "99", "X" },
                 { "999", "Y" },
                 { "9999", "Z" },
-                { "*", "*" },
-                { "#", "#" },
-                { " ", " " } 
+                { "*", "" },
+                { "#", " " },
+                { " ", " " }
             };
         }
     }

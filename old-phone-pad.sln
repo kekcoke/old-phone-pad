@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "old-phone-pad", "old-phone-pad.csproj", "{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FBA6C9A-0380-491F-966A-BE487BFE723C}
+	EndGlobalSection
+EndGlobal
