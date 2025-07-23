@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks.Sources;
 
 namespace OldPhonePad {
     class Program
@@ -53,60 +53,83 @@ namespace OldPhonePad {
 
                 var left = 0;
                 var right = 1;
-                int offsetFromEnd = stringLength - right;
+                int rightOffsetFromEnd = stringLength - 1 - right;
+ 
                 var result = string.Empty;
 
                 while (left <= stringLength)
                 {
                     var token = new System.Text.StringBuilder();
+                    var maxIndex = stringLength - 1;
+                    
+                    // if iteration is at the last character
+                    if (right == left && rightOffsetFromEnd == 0)
+                    {
+                        char lastChar = input[stringLength - 1];
+                        result += GetNumpadCharacter(lastChar.ToString());
+                        return result;
+                    }
+
 
                     char currentChar = input[left];
-
-                    // if both pointers in same place and right is last index, just append it
-                    if (stringLength - 1 == right && left == right)
-                    {
-                        result += GetNumpadCharacter(currentChar.ToString());
-                        break;
-                    }
-            
                     char nextChar = input[right];
 
                     token.Append(currentChar.ToString());
 
-                    while (currentChar.Equals(nextChar))
+                    if (nextChar.Equals(currentChar))
                     {
-                        token.Append(nextChar.ToString());
-
-                        if (right < stringLength && !offsetFromEnd.Equals(1)) // ok for 22 = B, not for 223 BD
+                        while (currentChar.Equals(nextChar))
                         {
-                            nextChar = input[right++];
+                            // if right pointer next the last char, we need to break
+                            if (right < stringLength && !rightOffsetFromEnd.Equals(1))
+                            {
+                                token.Append(nextChar.ToString());
+                                nextChar = input[right++];
+                            }
+                            else
+                            {
+
+                                var substringToken = token.ToString();
+                                var substringLetter = GetNumpadCharacter(substringToken);
+                                result += substringLetter;
+
+                                if (rightOffsetFromEnd == 0)
+                                {
+                                    return result; // if right pointer is at the end, return the result
+                                }
+                                else
+                                {
+                                    left = right;
+                                    right = left + 1;
+                                }
+                                token.Clear();
+                                break;
+                            }
                         }
-                        else
-                        {
-                            break; //problem is 23... then it needs to process.
-                        }
-                    }
-
-                    var word = token.ToString();
-
-                    Console.WriteLine($"Processing token: {word}");
-                    if (numpadDictionary.TryGetValue(word, out string value))
-                    {
-                        result += value;
-
-                        // move left pointer next the right pointer
-                        // this is to avoid processing the same character again
-                        left = right;
-
-                        // avoid out of range exception. reset right pointer to the next character after the current token
-                        right = (right + 1).Equals(stringLength) ? left : left + 1; //buggy
-                        token.Clear(); // clear the token for the next iteration
-                        continue;
                     }
                     else
                     {
-                        throw new ArgumentException($"The input '{word}' is not a valid numpad input.");
+                        var word = token.ToString();
+                        var letter = GetNumpadCharacter(word);
+
+                        result += letter;
+
+                        // avoid out of range exception. set left pointer to the right pointer
+                        if (rightOffsetFromEnd == 0 && left != right) 
+                        {
+                            left = right;
+                            continue;
+                        }
+                        // if not, move both pointers to next new sequence
+                        else
+                        {
+                            left = right;
+                            right = left + 1;
+                        }
+                        token.Clear();
+                        continue;
                     }
+
                 }
 
                 return result;
@@ -114,7 +137,7 @@ namespace OldPhonePad {
             catch (ArgumentException ex)
             {
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
-                return $"An error occurred while processing the input.";
+                return $"An error occurred while processing the input {input}. Please ensure it is valid.";
             }
         }
         
