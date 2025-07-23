@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks.Sources;
 
 namespace OldPhonePad {
     class Program
@@ -40,66 +41,52 @@ namespace OldPhonePad {
 
         public static string ConvertNumpadInput(string input)
         {
-            // char[] delimiters = { ' ', '\t', '#' };
-            // string[] numbersArray = input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-
             try
             {
                 var numpadDictionary = NumpadDictionary();
+                var stringLength = input.Length;
 
-                if (input.Length == 1)
+                if (stringLength == 1)
                 {
                     return GetNumpadCharacter(input);
                 }
 
                 var left = 0;
                 var right = 1;
+                int offsetFromEnd = stringLength - right;
                 var result = string.Empty;
 
-                while (left < input.Length)
+                while (left <= stringLength)
                 {
-                    // take char values of left and right
-                    // append token value until the next char is different
-                    // if the next char is the same, increment right
-                    // if the next char is different, check if the token exists in the dictionary
-                    // if it exists, append the value to the result
-                    // if it doesn't exist, throw an exception
-
-                    char currentChar = input[left];
-                
-                    // Check if we are at the end of the input
-                    bool isLastChar = left == input.Length; // 2-length input is a special case
-                    bool isLastCharNext = input.Length - 1 - right == 1;
                     var token = new System.Text.StringBuilder();
 
-                    if (isLastChar)
+                    char currentChar = input[left];
+
+                    // if both pointers in same place and right is last index, just append it
+                    if (stringLength - 1 == right && left == right)
                     {
-                        // if we are at the last character, we can break the loop
-                        Console.WriteLine($"Processing last character: {currentChar}");
                         result += GetNumpadCharacter(currentChar.ToString());
                         break;
                     }
-                    else
+            
+                    char nextChar = input[right];
+
+                    token.Append(currentChar.ToString());
+
+                    while (currentChar.Equals(nextChar))
                     {
-                        char nextChar = input[right];
+                        token.Append(nextChar.ToString());
 
-                        token.Append(currentChar.ToString());
-
-                        while (currentChar.Equals(nextChar))
+                        if (right < stringLength && !offsetFromEnd.Equals(1)) // ok for 22 = B, not for 223 BD
                         {
-                            token.Append(nextChar.ToString());
-                            isLastCharNext = input.Length - 1 - right == 1;
-
-                            if (isLastCharNext)
-                            {
-                                break;
-                            }
-
-                            nextChar = input[++right];
+                            nextChar = input[right++];
+                        }
+                        else
+                        {
+                            break; //problem is 23... then it needs to process.
                         }
                     }
 
-                    // we get here it means contiguous characters are complete
                     var word = token.ToString();
 
                     Console.WriteLine($"Processing token: {word}");
@@ -112,7 +99,7 @@ namespace OldPhonePad {
                         left = right;
 
                         // avoid out of range exception. reset right pointer to the next character after the current token
-                        right = isLastCharNext ? left : left + 1;
+                        right = (right + 1).Equals(stringLength) ? left : left + 1; //buggy
                         token.Clear(); // clear the token for the next iteration
                         continue;
                     }
