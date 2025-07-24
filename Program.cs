@@ -51,87 +51,9 @@ namespace OldPhonePad {
                     return GetNumpadCharacter(input);
                 }
 
-                var left = 0;
-                var right = 1;
-                int rightOffsetFromEnd = stringLength - 1 - right;
- 
+                var list = SplitInput(input);
                 var result = string.Empty;
-
-                while (left <= stringLength)
-                {
-                    var token = new System.Text.StringBuilder();
-                    var maxIndex = stringLength - 1;
-                    
-                    // if iteration is at the last character
-                    if (right == left && rightOffsetFromEnd == 0)
-                    {
-                        char lastChar = input[stringLength - 1];
-                        result += GetNumpadCharacter(lastChar.ToString());
-                        return result;
-                    }
-
-
-                    char currentChar = input[left];
-                    char nextChar = input[right];
-
-                    token.Append(currentChar.ToString());
-
-                    if (nextChar.Equals(currentChar))
-                    {
-                        while (currentChar.Equals(nextChar))
-                        {
-                            // if right pointer next the last char, we need to break
-                            if (right < stringLength && !rightOffsetFromEnd.Equals(1))
-                            {
-                                token.Append(nextChar.ToString());
-                                nextChar = input[right++];
-                            }
-                            else
-                            {
-
-                                var substringToken = token.ToString();
-                                var substringLetter = GetNumpadCharacter(substringToken);
-                                result += substringLetter;
-
-                                if (rightOffsetFromEnd == 0)
-                                {
-                                    return result; // if right pointer is at the end, return the result
-                                }
-                                else
-                                {
-                                    left = right;
-                                    right = left + 1;
-                                }
-                                token.Clear();
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var word = token.ToString();
-                        var letter = GetNumpadCharacter(word);
-
-                        result += letter;
-
-                        // avoid out of range exception. set left pointer to the right pointer
-                        if (rightOffsetFromEnd == 0 && left != right) 
-                        {
-                            left = right;
-                            continue;
-                        }
-                        // if not, move both pointers to next new sequence
-                        else
-                        {
-                            left = right;
-                            right = left + 1;
-                        }
-                        token.Clear();
-                        continue;
-                    }
-
-                }
-
+                
                 return result;
             }
             catch (ArgumentException ex)
