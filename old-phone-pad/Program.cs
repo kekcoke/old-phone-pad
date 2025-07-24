@@ -68,8 +68,11 @@ namespace OldPhonePad
 
         public static List<string> SplitInput(string input)
         {
-            var delimiters = @"(\*#|[*#]|\s+)";
-            return Regex.Split(input, delimiters)
+            var pattern = @"\d+(?:\*#|\*|#)?";
+
+            return Regex.Matches(input.Trim(), pattern)
+                        .Cast<Match>()
+                        .Select(m => m.Value)
                         .ToList();
             
         }
