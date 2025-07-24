@@ -2,6 +2,14 @@ The program emulates a old numpad behavior minus the user interface.
 
 Given a character sequences resembling data entered in the old numpad, it converts thosse into its corresponding letter, if any.
 
+Testing.
+
+    Install dotnet sdk & runtime prior.
+    Proceed to test folder directory; there enter following commands
+
+    dotnet restore
+    dotnet test
+
 Limitations.
 
 1. Case-insensitivity. 
