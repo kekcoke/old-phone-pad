@@ -14,6 +14,14 @@ namespace OldPhonePad.Tests
             List<string> result = Program.SplitInput(input);
             Assert.Equal(expected, result);
         }
+
+        [Theory]
+        [MemberData(nameof(TestData.GetSingleOutput_GivenInput), MemberType = typeof(TestData))]
+        public void ConvertNumpadInput_ReturnsExpectedOneLengthCharacter(string input, string expected)
+        {
+            string result = Program.ConvertNumpadInput(input);
+            Assert.Equal(expected, result);
+        }
     }
 
     public class TestData : IEnumerable<object[]>
@@ -36,6 +44,41 @@ namespace OldPhonePad.Tests
             yield return new object[] { GIVEN_INPUT_2, new List<string> { "227*#" } };
             yield return new object[] { GIVEN_INPUT_3, new List<string> { "4433555", "555666#" } };
             yield return new object[] { GIVEN_INPUT_4, new List<string> { "8", "88777444666*", "664#" } };
+        }
+
+        public static IEnumerable<object[]> GetSingleOutput_GivenInput()
+        {
+            yield return new object[] { "1", "1" };
+            yield return new object[] { "2", "A" };
+            yield return new object[] { "22", "B" };
+            yield return new object[] { "222", "C" };
+            yield return new object[] { "3", "D" };
+            yield return new object[] { "33", "E" };
+            yield return new object[] { "333", "F" };
+            yield return new object[] { "4", "G" };
+            yield return new object[] { "44", "H" };
+            yield return new object[] { "444", "I" };
+            yield return new object[] { "5", "J" };
+            yield return new object[] { "55", "K" };
+            yield return new object[] { "555", "L" };
+            yield return new object[] { "6", "M" };
+            yield return new object[] { "66", "N" };
+            yield return new object[] { "666", "O" };
+            yield return new object[] { "7", "P" };
+            yield return new object[] { "77", "Q" };
+            yield return new object[] { "777", "R" };
+            yield return new object[] { "7777", "S" };
+            yield return new object[] { "8", "T" };
+            yield return new object[] { "88", "U" };
+            yield return new object[] { "888", "V" };
+            yield return new object[] { "9", "W" };
+            yield return new object[] { "99", "X" };
+            yield return new object[] { "999", "Y" };
+            yield return new object[] { "9999", "Z" };
+            yield return new object[] { "*", "" };
+            yield return new object[] { "#", " " };
+            yield return new object[] { " ", " " };
+            yield return new object[] { "0", " " };
         }
 
         public IEnumerator<object[]> GetEnumerator()
