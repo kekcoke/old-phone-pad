@@ -2,8 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace OldPhonePad {
-    class Program
+namespace OldPhonePad 
+{
+    public class Program
     {
         static void Main()
         {
