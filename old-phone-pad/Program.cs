@@ -70,11 +70,10 @@ namespace OldPhonePad
         {
             var pattern = @"\d+(?:\*#|\*|#)?";
 
-            return Regex.Matches(input.Trim(), pattern)
+            return Regex.Matches(input, pattern)
                         .Cast<Match>()
                         .Select(m => m.Value)
                         .ToList();
-            
         }
         
         public static string GetNumpadCharacter(string input)
