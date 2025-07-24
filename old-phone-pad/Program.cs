@@ -2,8 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace OldPhonePad {
-    class Program
+namespace OldPhonePad 
+{
+    public class Program
     {
         static void Main()
         {
@@ -53,7 +54,9 @@ namespace OldPhonePad {
 
                 var list = SplitInput(input);
                 var result = string.Empty;
+
                 
+
                 return result;
             }
             catch (ArgumentException ex)
@@ -65,8 +68,11 @@ namespace OldPhonePad {
 
         public static List<string> SplitInput(string input)
         {
-            var delimiters = @"(\*#|[*#]|\s+)";
-            return Regex.Split(input, delimiters)
+            var pattern = @"\d+(?:\*#|\*|#)?";
+
+            return Regex.Matches(input.Trim(), pattern)
+                        .Cast<Match>()
+                        .Select(m => m.Value)
                         .ToList();
             
         }

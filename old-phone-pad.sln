@@ -2,7 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "old-phone-pad", "old-phone-pad.csproj", "{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "old-phone-pad", "old-phone-pad\old-phone-pad.csproj", "{8A62A5E0-35D9-9FC6-B5E3-1FBA9AF9ABDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "old-phone-pad-tests", "old-phone-pad.tests\old-phone-pad.tests.csproj", "{02529702-5E9C-41F2-995D-AA85D2EFE3F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
