@@ -44,6 +44,7 @@ namespace OldPhonePad.Tests
             yield return new object[] { GIVEN_INPUT_2, new List<string> { "227*#" } };
             yield return new object[] { GIVEN_INPUT_3, new List<string> { "4433555", "555666#" } };
             yield return new object[] { GIVEN_INPUT_4, new List<string> { "8", "88777444666*", "664#" } };
+            yield return new object[] { "844330336633", new List<string> { "844330336633" } };
         }
 
         public static IEnumerable<object[]> GetSingleOutput_GivenInput()
