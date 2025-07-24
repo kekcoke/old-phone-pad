@@ -12,12 +12,13 @@ Testing.
 
 Limitations.
 
-1. Case-insensitivity. 
+    1. Case-insensitivity. 
+    2. Lack of multi-mode intrepreting the sequence, with #1 as a symptom.
 
 
 Future considerations.
 
-1. Multi-mode. Enable cha
-2. File I/O; requires more asynchronous handling and dynamic memory allocation to account varying filesize.
-3. Create U/I. For the nostalgia and enabling learning to younger generations who weren't exposed.
-4. Predictive text. A huge undertaking, likely after 3. Can supercede 3 for text analysis cases.
+    1. Multi-mode. Enable cha
+    2. File I/O; requires more asynchronous handling and dynamic memory allocation to account varying filesize.
+    3. Create U/I. For the nostalgia and enabling learning to younger generations who weren't exposed.
+    4. Predictive text. A huge undertaking, likely after 3. Can supercede 3 for text analysis cases.
