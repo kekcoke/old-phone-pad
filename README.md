@@ -12,7 +12,7 @@ Testing.
 
 Limitations.
 
-    1. Case-insensitivity. 
+    1. Case-insensitivity and lack of special character selections. 
     2. Lack of multi-mode intrepreting the sequence, with #1 as a symptom.
 
 

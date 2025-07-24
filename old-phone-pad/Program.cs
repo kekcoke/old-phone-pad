@@ -53,9 +53,25 @@ namespace OldPhonePad
                 }
 
                 var list = SplitInput(input);
-                var result = string.Empty;
+                var listahan = new LinkedList<string>(list);
 
-                
+                var result = string.Empty;
+                foreach (var item in listahan)
+                {
+                    if (numpadDictionary.ContainsKey(item))
+                    {
+                        result = numpadDictionary[item];
+                        if (!string.IsNullOrEmpty(result))
+                        {
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Unknown substring '{item}'");
+                    }
+                }
+
 
                 return result;
             }
@@ -121,8 +137,9 @@ namespace OldPhonePad
                 { "999", "Y" },
                 { "9999", "Z" },
                 { "*", "" },
-                { "#", " " },
-                { " ", " " }
+                { "#", " " }, // this & below are space delimiters
+                { " ", " " }, // but these aren't allowed at start & end.
+                { "0", " " }  // or a filtered out.
             };
         }
     }
