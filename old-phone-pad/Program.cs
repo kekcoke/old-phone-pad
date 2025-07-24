@@ -49,7 +49,7 @@ namespace OldPhonePad
 
                 if (stringLength == 1)
                 {
-                    return GetNumpadCharacter(input);
+                    return numpadDictionary[input];
                 }
 
                 var list = SplitInput(input);
@@ -58,6 +58,15 @@ namespace OldPhonePad
                 var result = string.Empty;
                 foreach (var item in listahan)
                 {
+                    // loop each item and append to token
+                    // if prev != next then get char
+                    // if none can be found, iteratively cut last
+                    // char until a match is found
+                    // for item length no more than 3-4 chars,
+                    // depending on the numpad value
+                    // if none found, throw exception
+
+
                     if (numpadDictionary.ContainsKey(item))
                     {
                         result = numpadDictionary[item];
@@ -92,18 +101,6 @@ namespace OldPhonePad
                         .ToList();
         }
         
-        public static string GetNumpadCharacter(string input)
-        {
-            var numpadDictionary = NumpadDictionary();
-            if (numpadDictionary.TryGetValue(input, out string value))
-            {
-                return value;
-            }
-            else
-            {
-                throw new ArgumentException($"The input '{input}' is not a valid numpad input.");
-            }
-        }
 
         private static Dictionary<string, string> NumpadDictionary()
         {
