@@ -53,7 +53,9 @@ namespace OldPhonePad {
 
                 var list = SplitInput(input);
                 var result = string.Empty;
+
                 
+
                 return result;
             }
             catch (ArgumentException ex)
