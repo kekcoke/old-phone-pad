@@ -140,6 +140,14 @@ namespace OldPhonePad {
                 return $"An error occurred while processing the input {input}. Please ensure it is valid.";
             }
         }
+
+        public static List<string> SplitInput(string input)
+        {
+            var delimiters = @"(\*#|[*#]|\s+)";
+            return Regex.Split(input, delimiters)
+                        .ToList();
+            
+        }
         
         public static string GetNumpadCharacter(string input)
         {
