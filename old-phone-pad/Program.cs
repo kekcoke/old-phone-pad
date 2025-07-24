@@ -84,7 +84,7 @@ namespace OldPhonePad
 
         public static List<string> SplitInput(string input)
         {
-            var pattern = @"\d+(?:\*#|\*|#)?";
+            var pattern = @"\d+|[#0]";
 
             return Regex.Matches(input, pattern)
                         .Cast<Match>()
