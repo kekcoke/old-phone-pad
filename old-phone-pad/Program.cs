@@ -66,6 +66,12 @@ namespace OldPhonePad
                     // depending on the numpad value
                     // if none found, throw exception
 
+                    // for # elements
+                    if (item.Length == 1 && numpadDictionary.ContainsKey(item))
+                    {
+                        result += numpadDictionary[item];
+                        continue;
+                    }
 
                     if (numpadDictionary.ContainsKey(item))
                     {
