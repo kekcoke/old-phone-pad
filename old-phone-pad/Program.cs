@@ -44,7 +44,7 @@ namespace OldPhonePad
         {
             try
             {
-                var numpadDictionary = NumpadDictionary();
+                var numpadDictionary = Constants.Constants.NumpadDictionary();
                 var stringLength = input.Length;
 
                 if (stringLength == 1)
@@ -74,14 +74,14 @@ namespace OldPhonePad
                     }
 
                     if (numpadDictionary.ContainsKey(item))
-                    {
+                            {
                         result = numpadDictionary[item];
                         if (!string.IsNullOrEmpty(result))
-                        {
+                                {
                             return result;
+                            }
                         }
-                    }
-                    else
+else
                     {
                         throw new ArgumentException($"Unknown substring '{item}'");
                     }
@@ -107,44 +107,6 @@ namespace OldPhonePad
                         .ToList();
         }
         
-
-        private static Dictionary<string, string> NumpadDictionary()
-        {
-            return new Dictionary<string, string>
-            {
-                { "1", "1" },
-                { "2", "A" },
-                { "22", "B" },
-                { "222", "C" },
-                { "3", "D" },
-                { "33", "E" },
-                { "333", "F" },
-                { "4", "G" },
-                { "44", "H" },
-                { "444", "I" },
-                { "5", "J" },
-                { "55", "K" },
-                { "555", "L" },
-                { "6", "M" },
-                { "66", "N" },
-                { "666", "O" },
-                { "7", "P" },
-                { "77", "Q" },
-                { "777", "R" },
-                { "7777", "S" },
-                { "8", "T" },
-                { "88", "U" },
-                { "888", "V" },
-                { "9", "W" },
-                { "99", "X" },
-                { "999", "Y" },
-                { "9999", "Z" },
-                { "*", "" },
-                { "#", " " }, // this & below are space delimiters
-                { " ", " " }, // but these aren't allowed at start & end.
-                { "0", " " }  // or a filtered out.
-            };
-        }
     }
 }
 
