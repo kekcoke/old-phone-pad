@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace OldPhonePad.Constants;
 
 public class Constants
@@ -6,7 +8,9 @@ public class Constants
     {
         return new Dictionary<string, string>
             {
-                { "1", "1" },
+                { "1", "&" },
+                { "11", "'" },
+                { "111", "(" },
                 { "2", "A" },
                 { "22", "B" },
                 { "222", "C" },
@@ -39,4 +43,7 @@ public class Constants
                 { "0", " " }  // or a filtered out.
             };
     }
+
+    public static int GetMaxNumPadLength(int numPadValue)
+        => numPadValue == 7 || numPadValue == 9 ? 4 : 3;
 }
