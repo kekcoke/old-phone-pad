@@ -49,7 +49,7 @@ namespace OldPhonePad.Tests
 
         public static IEnumerable<object[]> GetSingleOutput_GivenInput()
         {
-            yield return new object[] { "1", "1" };
+            yield return new object[] { "1", "&" };
             yield return new object[] { "2", "A" };
             yield return new object[] { "22", "B" };
             yield return new object[] { "222", "C" };
