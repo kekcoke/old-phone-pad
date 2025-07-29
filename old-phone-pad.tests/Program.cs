@@ -34,17 +34,18 @@ namespace OldPhonePad.Tests
         public static IEnumerable<object[]> GetSplitInputData()
         {
             yield return new object[] { "1", new List<string> { "1" } };
-            yield return new object[] { "123", new List<string> { "123" } };
-            yield return new object[] { "123 456", new List<string> { "123", "456" } };
-            yield return new object[] { "122*#11* *", new List<string> { "122", "#", "11" } };
+            yield return new object[] { "123", new List<string> { "1", "2", "3" } };
+            yield return new object[] { "123 456", new List<string> { "1", "2", "3", "4", "5", "6" } };
+            yield return new object[] { "122*#11* *", new List<string> { "1", "22", "#", "11" } };
             yield return new object[] { " 4 2 3  88* 999*# ", new List<string> { "4", "2", "3", "88", "999", "#" } };
-            yield return new object[] { " **34*#  8867*", new List<string> { "34", "#", "8867" } };
+            yield return new object[] { " **34*#  8867*", new List<string> { "3", "4", "#", "88", "6", "7" } };
             yield return new object[] { GIVEN_INPUT_1, new List<string> { "33", "#" } };
-            yield return new object[] { GIVEN_INPUT_2, new List<string> { "227", "#" } };
-            yield return new object[] { GIVEN_INPUT_3, new List<string> { "4433555", "555666", "#" } };
-            yield return new object[] { GIVEN_INPUT_4, new List<string> { "8", "88777444666", "664", "#" } };
-            yield return new object[] { "844330336633", new List<string> { "844330336633" } };
-            yield return new object[] { "2*22*222*#3*33*333*", new List<string> { "2", "22", "222", "#", "3", "33", "333"} };
+            yield return new object[] { GIVEN_INPUT_2, new List<string> { "22", "7", "#" } };
+            yield return new object[] { GIVEN_INPUT_3, new List<string> { "44", "33", "555", "555", "666", "#" } };
+            yield return new object[] { GIVEN_INPUT_4, new List<string> { "8", "88", "777", "444", "666", "66", "4", "#" } };
+            yield return new object[] { "844330336633", new List<string> { "8", "44", "33", "0", "33", "66", "33" } };
+            yield return new object[] { "2*22*222*#3*33*333*", new List<string> { "2", "22", "222", "#", "3", "33", "333" } };
+            yield return new object[] { "888888", new List<string> { "888888" } };
         }
 
         public static IEnumerable<object[]> GetSingleOutput_GivenInput()

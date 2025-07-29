@@ -74,14 +74,14 @@ namespace OldPhonePad
                     }
 
                     if (numpadDictionary.ContainsKey(item))
-                            {
+                    {
                         result = numpadDictionary[item];
                         if (!string.IsNullOrEmpty(result))
-                                {
+                        {
                             return result;
-                            }
                         }
-else
+                    }
+                    else
                     {
                         throw new ArgumentException($"Unknown substring '{item}'");
                     }
@@ -99,7 +99,7 @@ else
 
         public static List<string> SplitInput(string input)
         {
-            var pattern = @"\d+|[#0]";
+            var pattern = @"(\d)\1*|([#0])";
 
             return Regex.Matches(input, pattern)
                         .Cast<Match>()
