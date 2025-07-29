@@ -1,9 +1,12 @@
-using System.Reflection.Metadata.Ecma335;
-
 namespace OldPhonePad.Constants;
 
 public class Constants
 {
+    public class KeyWords
+    {
+        public const string UNKNOWN = "?????";
+    }
+
     public static Dictionary<string, string> NumpadDictionary()
     {
         return new Dictionary<string, string>
@@ -38,12 +41,10 @@ public class Constants
                 { "999", "Y" },
                 { "9999", "Z" },
                 { "*", "" },
-                { "#", " " }, // this & below are space delimiters
+                { "#", "" }, // this & below are space delimiters
                 { " ", " " }, // but these aren't allowed at start & end.
                 { "0", " " }  // or a filtered out.
             };
     }
-
-    public static int GetMaxNumPadLength(int numPadValue)
-        => numPadValue == 7 || numPadValue == 9 ? 4 : 3;
+        
 }

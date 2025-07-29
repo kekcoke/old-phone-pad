@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OldPhonePad 
@@ -55,45 +56,37 @@ namespace OldPhonePad
                 var list = SplitInput(input);
                 var listahan = new LinkedList<string>(list);
 
-                var result = string.Empty;
+                var result = new StringBuilder();
+
+                // check substring. truncate one string like for 227 if not found. 
                 foreach (var item in listahan)
                 {
-                    // loop each item and append to token
-                    // if prev != next then get char
-                    // if none can be found, iteratively cut last
-                    // char until a match is found
-                    // for item length no more than 3-4 chars,
-                    // depending on the numpad value
-                    // if none found, throw exception
-
-                    // for # elements
-                    if (item.Length == 1 && numpadDictionary.ContainsKey(item))
-                    {
-                        result += numpadDictionary[item];
-                        continue;
-                    }
-
                     if (numpadDictionary.ContainsKey(item))
                     {
-                        result = numpadDictionary[item];
-                        if (!string.IsNullOrEmpty(result))
-                        {
-                            return result;
-                        }
+                        result.Append(numpadDictionary[item]);
                     }
-                    else
+                    else if (item.Length > 4)
                     {
-                        throw new ArgumentException($"Unknown substring '{item}'");
+                        var t = item.Substring(0, item.Length - 1);
+
+                        if (numpadDictionary.ContainsKey(t))
+                        {
+                            result.Append(numpadDictionary[item]);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Unknown substring '{item}'");
+                        }
+                        
                     }
                 }
 
-
-                return result;
+                return result.ToString();
             }
             catch (ArgumentException ex)
             {
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
-                return $"An error occurred while processing the input {input}. Please ensure it is valid.";
+                return Constants.Constants.KeyWords.UNKNOWN;
             }
         }
 
