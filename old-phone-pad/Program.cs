@@ -16,18 +16,19 @@ namespace OldPhonePad
             {
                 Console.Write("Enter numpad number: ");
                 string validPattern = @"^[0-9#* ]+$";
-                string input = Console.ReadLine();
 
-                if (input.ToLower() == exitCommand)
-                {
-                    Console.WriteLine("Exiting the program.");
-                    break;
-                }
+                var input = Console.ReadLine()!;
 
-                else if (string.IsNullOrEmpty(input))
+                if (input == null || string.IsNullOrEmpty(input))
                 {
                     Console.WriteLine("Input cannot be empty. Please enter a valid numpad number.");
                     continue;
+                }
+
+                else if (input.ToLower() == exitCommand)
+                {
+                    Console.WriteLine("Exiting the program.");
+                    break;
                 }
 
                 else if (!Regex.IsMatch(input, validPattern))
@@ -53,33 +54,23 @@ namespace OldPhonePad
                     return numpadDictionary[input];
                 }
 
-                var list = SplitInput(input);
-                var listahan = new LinkedList<string>(list);
+                var endsWithHash = input.EndsWith("#", StringComparison.Ordinal);
+                var endsWithHashterisk = input.EndsWith("*#", StringComparison.Ordinal);
+                var listahan = SplitInput(input);
 
                 var result = new StringBuilder();
+                var len = listahan.Count() - 1;
+                var currentIndex = 0;
 
-                // check substring. truncate one string like for 227 if not found. 
-                foreach (var item in listahan)
+                while (currentIndex < listahan.Count)
                 {
-                    if (numpadDictionary.ContainsKey(item))
-                    {
-                        result.Append(numpadDictionary[item]);
-                    }
-                    else if (item.Length > 4)
-                    {
-                        var t = item.Substring(0, item.Length - 1);
+                    int nextDelimiterIndex = FindNextDelimter(listahan, currentIndex);
 
-                        if (numpadDictionary.ContainsKey(t))
-                        {
-                            result.Append(numpadDictionary[item]);
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Unknown substring '{item}'");
-                        }
-                        
-                    }
+                    var segmentResult = ProcessSegments(listahan, currentIndex, nextDelimiterIndex);
+
+                    currentIndex = GetNextStartingIndex(listahan, nextDelimiterIndex);
                 }
+
 
                 return result.ToString();
             }
@@ -92,12 +83,29 @@ namespace OldPhonePad
 
         public static List<string> SplitInput(string input)
         {
-            var pattern = @"(\d)\1*|([#0])";
+            var pattern = @"(\d)\1*|([*#0])";
 
             return Regex.Matches(input, pattern)
                         .Cast<Match>()
                         .Select(m => m.Value)
                         .ToList();
+        }
+
+        private static string ProcessSegments(List<string> listahan, int startIndex, int nextDelimiterIndex)
+        {
+            if (startIndex >= listahan.Count) return string.Empty;
+
+            return string.Empty;
+        }
+
+        private static int FindNextDelimter(List<string> listahan, int startIndex)
+        {
+            return Math.Abs(10);
+        }
+
+        private static int GetNextStartingIndex(List<string> listahan, int nextDelimiterIndex)
+        {
+            return Math.Abs(10);
         }
         
     }

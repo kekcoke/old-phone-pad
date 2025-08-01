@@ -87,8 +87,6 @@ namespace OldPhonePad.Tests
             yield return new object[] { "99", "X" };
             yield return new object[] { "999", "Y" };
             yield return new object[] { "9999", "Z" };
-            yield return new object[] { "*", "" };
-            yield return new object[] { "#", " " };
             yield return new object[] { " ", " " };
             yield return new object[] { "0", " " };
         }
@@ -98,7 +96,7 @@ namespace OldPhonePad.Tests
             yield return new object[] { GIVEN_INPUT_1, "E" };
             yield return new object[] { GIVEN_INPUT_2, "B" };
             yield return new object[] { GIVEN_INPUT_3, "HELLO" };
-            yield return new object[] { GIVEN_INPUT_4, "??????" };
+            yield return new object[] { GIVEN_INPUT_4, "?????" };
         }
 
         public IEnumerator<object[]> GetEnumerator()

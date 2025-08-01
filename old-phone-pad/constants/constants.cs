@@ -2,7 +2,7 @@ namespace OldPhonePad.Constants;
 
 public class Constants
 {
-    public class KeyWords
+    public static class KeyWords
     {
         public const string UNKNOWN = "?????";
     }
@@ -39,9 +39,7 @@ public class Constants
                 { "9", "W" },
                 { "99", "X" },
                 { "999", "Y" },
-                { "9999", "Z" },
-                { "*", "" },
-                { "#", "" }, // this & below are space delimiters
+                { "9999", "Z" }, // this & below are space delimiters
                 { " ", " " }, // but these aren't allowed at start & end.
                 { "0", " " }  // or a filtered out.
             };
