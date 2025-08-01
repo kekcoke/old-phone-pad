@@ -4,13 +4,11 @@ namespace OldPhonePad.Helpers;
 
 public class Helpers
 {
-    public static bool IsAllRepeatedDigits(int val)
+    public static bool IsAllRepeatedDigits(string val)
     {
-        var numString = Math.Abs(val).ToString();
+        char first = val[0];
 
-        char first = numString[0];
-
-        foreach (char digit in numString)
+        foreach (char digit in val)
         {
             if (digit != first) return false;
         }

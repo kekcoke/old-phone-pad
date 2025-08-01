@@ -11,8 +11,7 @@ public class HelperTests
     [InlineData("-998", false)]
     public void IsAllRepeatedDigits_EvaluateCorrectDigits(string val, bool expected)
     {
-        var intVal = int.Parse(val);
 
-        Assert.Equal(OldPhonePad.Helpers.Helpers.IsAllRepeatedDigits(intVal), expected);
+        Assert.Equal(OldPhonePad.Helpers.Helpers.IsAllRepeatedDigits(val), expected);
     }
 }

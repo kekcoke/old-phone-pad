@@ -50,28 +50,16 @@ namespace OldPhonePad
             try
             {
                 var numpadDictionary = Constants.Constants.NumpadDictionary();
-                var stringLength = input.Length;
-
-                if (stringLength == 1)
-                {
-                    return numpadDictionary[input];
-                }
-
-                var endsWithHash = input.EndsWith("#", StringComparison.Ordinal);
-                var endsWithHashterisk = input.EndsWith("*#", StringComparison.Ordinal);
                 var listahan = SplitInput(input);
-
                 var result = new StringBuilder();
-                var len = listahan.Count() - 1;
                 var currentIndex = 0;
 
                 while (currentIndex < listahan.Count)
                 {
                     int nextDelimiterIndex = FindNextDelimter(listahan, currentIndex);
-
-                    var segmentResult = ProcessSegments(listahan, currentIndex, nextDelimiterIndex);
-
+                    var segmentResult = ProcessSegment(listahan, currentIndex, nextDelimiterIndex);
                     currentIndex = GetNextStartingIndex(listahan, nextDelimiterIndex);
+                    result = result.Append(segmentResult);
                 }
 
                 return result.ToString();
@@ -93,28 +81,119 @@ namespace OldPhonePad
                         .ToList();
         }
 
-        private static string ProcessSegments(List<string> listahan, int startIndex, int nextDelimiterIndex)
+        private static string ProcessSegment(List<string> listahan, int startIndex, int nextDelimiterIndex)
         {
             if (startIndex >= listahan.Count) return string.Empty;
 
-            return string.Empty;
+            // if it ends in *# then eval whole segment
+            var numPadDict = Constants.Constants.NumpadDictionary();
+
+            // process repeat digits. patch fix.
+            if (listahan.Count == 1 && listahan[0].Length < 5)
+            {
+                return numPadDict[listahan[0]];
+            }
+
+            // determine type of delimiter
+            string nextDelimiter = listahan[nextDelimiterIndex];
+
+            if (nextDelimiter == "*" && listahan[nextDelimiterIndex + 1] == "#")
+            {
+                var dict = Constants.Constants.NumpadDictionary;
+                // You can add logic here to process the segment using 'dict'
+                var fullSegment = new StringBuilder();
+
+                for (int i = startIndex; i < nextDelimiterIndex; i++)
+                {
+                    // skip *  acting as in-between letter delimiters
+                    if (listahan[i] == "*") continue;
+
+                    fullSegment.Append(listahan[i]);
+                }
+
+                var fullSegmentStr = fullSegment.ToString();
+                if (numPadDict.ContainsKey(fullSegmentStr))
+                {
+                    return numPadDict[fullSegmentStr];
+                }
+                else
+                {
+                    var truncated = fullSegmentStr.Substring(0, fullSegmentStr.Length - 1);
+
+                    if (numPadDict.ContainsKey(truncated))
+                        return numPadDict[truncated];
+    
+                    return Constants.Constants.KeyWords.UNKNOWN;
+                }
+
+            }
+
+            var bitSegment = new StringBuilder();
+        
+            for (int i = startIndex; i < nextDelimiterIndex; i++)
+            {
+                // skip *  acting as in-between letter delimiters
+                if (listahan[i] == "*") continue;
+
+                bitSegment.Append(listahan[i]);
+            }
+
+            var bitSegmentStr = bitSegment.ToString();
+            if (numPadDict.ContainsKey(bitSegmentStr))
+            {
+                return numPadDict[bitSegmentStr];
+            }
+            else
+            {
+                var truncated = bitSegmentStr.Substring(0, bitSegmentStr.Length - 1);
+
+                if (numPadDict.ContainsKey(truncated))
+                    return numPadDict[truncated];
+    
+                return Constants.Constants.KeyWords.UNKNOWN;
+            }
+
         }
 
         public static int FindNextDelimter(List<string> listahan, int startIndex)
         {
-            string[] delimiters = { "*", "*#", "0", " " };
+            string[] delimeters = { "*", "*#", "0", " " };
+
+            if (listahan.Count == 1)
+            {
+                for (int i = 0; i < listahan[0].Length; i++)
+                {
+                    var letter = listahan[0][i].ToString();
+                    if (delimeters.Contains(letter))
+                        return i;
+                }
+
+                return listahan[0].Length;
+            }
+
             for (int i = startIndex; i < listahan.Count; i++)
             {
-                if (delimiters.Contains(listahan[i]))
+                if (delimeters.Contains(listahan[i]))
                     return i;
             }
 
             return listahan.Count;
         }
 
-        private static int GetNextStartingIndex(List<string> listahan, int nextDelimiterIndex)
+        private static int GetNextStartingIndex(List<string> listahan, int nextIndex)
         {
-            return Math.Abs(10);
+            if (nextIndex >= listahan.Count)
+            {
+                return listahan.Count;
+            }
+
+            // Check for "*#" pattern
+            if (nextIndex + 1 < listahan.Count && listahan[nextIndex + 1] == "#")
+            {
+                return nextIndex + 2; // Skip both
+            }
+            
+            return nextIndex + 1; // Skip "*"
         }
         
     }
