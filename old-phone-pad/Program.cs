@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Formats.Asn1;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Markup;
+using System.Linq;
 
 namespace OldPhonePad 
 {
@@ -71,7 +74,6 @@ namespace OldPhonePad
                     currentIndex = GetNextStartingIndex(listahan, nextDelimiterIndex);
                 }
 
-
                 return result.ToString();
             }
             catch (ArgumentException ex)
@@ -98,9 +100,16 @@ namespace OldPhonePad
             return string.Empty;
         }
 
-        private static int FindNextDelimter(List<string> listahan, int startIndex)
+        public static int FindNextDelimter(List<string> listahan, int startIndex)
         {
-            return Math.Abs(10);
+            string[] delimiters = { "*", "*#", "0", " " };
+            for (int i = startIndex; i < listahan.Count; i++)
+            {
+                if (delimiters.Contains(listahan[i]))
+                    return i;
+            }
+
+            return listahan.Count;
         }
 
         private static int GetNextStartingIndex(List<string> listahan, int nextDelimiterIndex)

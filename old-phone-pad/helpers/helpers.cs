@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace OldPhonePad.Helpers;
 
 public class Helpers
@@ -14,5 +16,12 @@ public class Helpers
         }
 
         return true;
+    }
+
+    public static bool IsValidT9Pattern(int val)
+    {
+        var regex = new Regex(@"");
+
+        return regex.IsMatch(val.ToString());
     }
 }

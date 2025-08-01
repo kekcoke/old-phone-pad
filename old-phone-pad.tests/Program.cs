@@ -30,6 +30,14 @@ namespace OldPhonePad.Tests
             string result = Program.ConvertNumpadInput(input);
             Assert.Equal(expected, result);
         }
+
+        [Theory]
+        [MemberData(nameof(TestData.GetSingleOutput_GivenList), MemberType = typeof(TestData))]
+        public void FindNextDelimeter(List<string> list, int nextIndex)
+        {
+            var result = Program.FindNextDelimter(list, 0);
+            Assert.Equal(result, nextIndex);
+        }
     }
 
     public class TestData : IEnumerable<object[]>
@@ -91,6 +99,12 @@ namespace OldPhonePad.Tests
             yield return new object[] { "0", " " };
         }
 
+        public static IEnumerable<object[]> GetSingleOutput_GivenList()
+        {
+            yield return new object[] { new List<string> { "33", "#" }, 1 };
+            yield return new object[] { new List<string> { "22", "7", "#" }, 2 };
+        }
+
         public static IEnumerable<object[]> GetMultipleOutput_GivenInput()
         {
             yield return new object[] { GIVEN_INPUT_1, "E" };
@@ -108,7 +122,5 @@ namespace OldPhonePad.Tests
         {
             return GetEnumerator();
         }
-
-
     }
 }
