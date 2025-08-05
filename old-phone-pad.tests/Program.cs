@@ -104,6 +104,10 @@ namespace OldPhonePad.Tests
             yield return new object[] { GIVEN_INPUT_2, "B" };
             yield return new object[] { GIVEN_INPUT_3, "HELLO" };
             yield return new object[] { GIVEN_INPUT_4, "?????" };
+            yield return new object[] { "4433555 555666 96667775553#", "HELLOWORLD" };
+            yield return new object[] { "4433555 555666 96667775553", "HELLOWORLD" };
+            yield return new object[] { "44335550555666096667775553#", "HEL LO WORLD" };
+            yield return new object[] { "7789*#", "?????" };
         }
 
         public IEnumerator<object[]> GetEnumerator()

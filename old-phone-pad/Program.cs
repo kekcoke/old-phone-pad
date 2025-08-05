@@ -185,7 +185,7 @@ namespace OldPhonePad
 
                 numPadDict.TryGetValue(truncated, out var tryMatchAgain);
 
-                return tryMatchAgain;
+                return String.IsNullOrEmpty(tryMatchAgain) ? Constants.Constants.KeyWords.UNKNOWN : tryMatchAgain;
             }
 
             throw new ArgumentException();
