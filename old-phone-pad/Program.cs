@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OldPhonePad 
@@ -58,16 +57,21 @@ namespace OldPhonePad
                 var segmentIndex = 0;
 
                 var delimiters = new Dictionary<int, List<int>>();
-                delimiters = GetDelimeters(listahan);
+                delimiters = GetDelimeters(listahan); // for future most-robust back-tracking.
 
                 while (segmentIndex < listahan.Count)
                 {
-                    List<int> delimiterSegment;
-                    delimiters.TryGetValue(segmentIndex, out delimiterSegment);
-                    var segmentResult = ProcessSegment(listahan, segmentIndex, delimiterSegment);
-                    // segmentIndex = GetNextStartingIndex(listahan, segmentIndex);
-                    result = result.Append(segmentResult);
+                    string segmentResult;
+                    bool resetFlag;
+                    (segmentResult, resetFlag) = ProcessSegment(listahan, segmentIndex);
 
+                    if (resetFlag)
+                    {
+                        result.Clear();
+                        resetFlag = false;
+                    }
+
+                    result.Append(segmentResult);
                     delimiters.Remove(segmentIndex);
                     segmentIndex++;
                 }
@@ -91,9 +95,9 @@ namespace OldPhonePad
                         .ToList();
         }
 
-        private static string ProcessSegment(List<string> listahan, int segmentIndex, List<int> delimiterIndices)
+        private static (string segment, bool resetFlag) ProcessSegment(List<string> listahan, int segmentIndex)
         {
-            if (segmentIndex >= listahan.Count) return string.Empty;
+            if (segmentIndex >= listahan.Count) return (string.Empty, false);
 
             var numPadDict = Constants.Constants.NumpadDictionary();
 
@@ -104,14 +108,22 @@ namespace OldPhonePad
             if (stringSegment.EndsWith("#") || stringSegment.EndsWith("*#"))
             {
                 var cleaned = CleanSegment(stringSegment);
-                return TryMatch(cleaned);
+                return (TryMatch(cleaned), false);
             }
-            
-            // if * is detected and next one is # eval the whole list
 
+            // if * is detected and next one is # eval the whole list
+            if (stringSegment.Equals("*") && segmentIndex + 1 < listahan.Count
+                && listahan[segmentIndex + 1].Equals("#"))
+            {
+                var segments = new StringBuilder();
+                listahan.ForEach(list => segments.Append(list));
+
+                return (TryMatch(segments.ToString()), true);
+    
+            }
 
             if (numPadDict.TryGetValue(stringSegment, out var directMatch))
-                return directMatch;
+                return (directMatch, false);
 
             throw new ArgumentException();
         }
@@ -158,11 +170,23 @@ namespace OldPhonePad
             if (segment.EndsWith("#") || segment.EndsWith("*#"))
             {
                 var cleaned = CleanSegment(segment);
+
                 return TryMatch(cleaned);
             }
 
             if (numPadDict.TryGetValue(segment, out var directMatch))
-                    return directMatch;
+            {
+                return directMatch;
+            }
+            else // for *# edge case
+            {
+                const int truncateLimit = 1;
+                var truncated = segment.Substring(0, segment.Length - truncateLimit); // remove 
+
+                numPadDict.TryGetValue(truncated, out var tryMatchAgain);
+
+                return tryMatchAgain;
+            }
 
             throw new ArgumentException();
         }
