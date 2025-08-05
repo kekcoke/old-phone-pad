@@ -6,6 +6,10 @@ namespace OldPhonePad
 {
     public class Program
     {
+        // Starting & end point of console application.
+        // Empty or non-digit chars will not be processed 
+        // and will be promoted to re-enter.
+        // Type 'exit' will terminate application.
         static void Main()
         {
             Console.WriteLine("Console NumPad Converter. \n. Enter numpad numbers to convert it to a character. \n Type 'exit' to quit.");
@@ -41,6 +45,10 @@ namespace OldPhonePad
             }
         }
 
+        // Input conversion.
+        // Pre-processing involves splitting it into segments
+        // Each segment is processed and converted into its input
+        // until all segments are processed.
         public static string ConvertNumpadInput(string input)
         {
             try
@@ -65,6 +73,7 @@ namespace OldPhonePad
                     bool resetFlag;
                     (segmentResult, resetFlag) = ProcessSegment(listahan, segmentIndex);
 
+                    // if resetFlag emits true, it likely input contains *#
                     if (resetFlag)
                     {
                         result.Clear();
@@ -85,6 +94,8 @@ namespace OldPhonePad
             }
         }
 
+        // repeating digits are coalesced into its own segment/group
+        // so are * & #
         public static List<string> SplitInput(string input)
         {
             var pattern = @"(\d)\1*|([*#0])";
@@ -95,6 +106,7 @@ namespace OldPhonePad
                         .ToList();
         }
 
+        // Parses each segment
         private static (string segment, bool resetFlag) ProcessSegment(List<string> listahan, int segmentIndex)
         {
             if (segmentIndex >= listahan.Count) return (string.Empty, false);
@@ -119,7 +131,7 @@ namespace OldPhonePad
                 listahan.ForEach(list => segments.Append(list));
 
                 return (TryMatch(segments.ToString()), true);
-    
+
             }
 
             if (numPadDict.TryGetValue(stringSegment, out var directMatch))
@@ -128,6 +140,8 @@ namespace OldPhonePad
             throw new ArgumentException();
         }
 
+        // Creates a dictionary of identified delimiters across segments of provided 
+        // input
         public static Dictionary<int, List<int>> GetDelimeters(List<string> listahan)
         {
             var delimeterDict = new Dictionary<int, List<int>>();
@@ -163,6 +177,9 @@ namespace OldPhonePad
             return delimeterDict;
         }
 
+
+        // Attempts to convert numeric sequence into its letter-equivalent
+        // if available.
         private static string TryMatch(string segment)
         {
             var numPadDict = Constants.Constants.NumpadDictionary();
@@ -191,6 +208,7 @@ namespace OldPhonePad
             throw new ArgumentException();
         }
 
+        // removes delimeters from segment
         private static string CleanSegment(string segment)
         {
             char[] omit = { '*', '#', ' ' };
