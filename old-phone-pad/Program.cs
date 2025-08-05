@@ -1,11 +1,15 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OldPhonePad 
 {
     public class Program
     {
+        // Starting & end point of console application.
+        // Empty or non-digit chars will not be processed 
+        // and will be promoted to re-enter.
+        // Type 'exit' will terminate application.
         static void Main()
         {
             Console.WriteLine("Console NumPad Converter. \n. Enter numpad numbers to convert it to a character. \n Type 'exit' to quit.");
@@ -15,18 +19,19 @@ namespace OldPhonePad
             {
                 Console.Write("Enter numpad number: ");
                 string validPattern = @"^[0-9#* ]+$";
-                string input = Console.ReadLine();
 
-                if (input.ToLower() == exitCommand)
-                {
-                    Console.WriteLine("Exiting the program.");
-                    break;
-                }
+                var input = Console.ReadLine()!;
 
-                else if (string.IsNullOrEmpty(input))
+                if (input == null || string.IsNullOrEmpty(input))
                 {
                     Console.WriteLine("Input cannot be empty. Please enter a valid numpad number.");
                     continue;
+                }
+
+                else if (input.ToLower() == exitCommand)
+                {
+                    Console.WriteLine("Exiting the program.");
+                    break;
                 }
 
                 else if (!Regex.IsMatch(input, validPattern))
@@ -40,92 +45,181 @@ namespace OldPhonePad
             }
         }
 
+        // Input conversion.
+        // Pre-processing involves splitting it into segments
+        // Each segment is processed and converted into its input
+        // until all segments are processed.
         public static string ConvertNumpadInput(string input)
         {
             try
             {
-                var numpadDictionary = NumpadDictionary();
-                var stringLength = input.Length;
+                var numpadDictionary = Constants.Constants.NumpadDictionary();
+                var listahan = SplitInput(input);
 
-                if (stringLength == 1)
+                if (!listahan[listahan.Count - 1].Contains("#"))
                 {
-                    return GetNumpadCharacter(input);
+                    listahan[listahan.Count - 1] = listahan[listahan.Count - 1] + "#";
                 }
 
-                var list = SplitInput(input);
-                var result = string.Empty;
+                var result = new StringBuilder();
+                var segmentIndex = 0;
 
-                
+                var delimiters = new Dictionary<int, List<int>>();
+                delimiters = GetDelimeters(listahan); // for future most-robust back-tracking.
 
-                return result;
+                while (segmentIndex < listahan.Count)
+                {
+                    string segmentResult;
+                    bool resetFlag;
+                    (segmentResult, resetFlag) = ProcessSegment(listahan, segmentIndex);
+
+                    // if resetFlag emits true, it likely input contains *#
+                    if (resetFlag)
+                    {
+                        result.Clear();
+                        resetFlag = false;
+                    }
+
+                    result.Append(segmentResult);
+                    delimiters.Remove(segmentIndex);
+                    segmentIndex++;
+                }
+
+                return result.ToString();
             }
             catch (ArgumentException ex)
             {
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
-                return $"An error occurred while processing the input {input}. Please ensure it is valid.";
+                return Constants.Constants.KeyWords.UNKNOWN;
             }
         }
 
+        // repeating digits are coalesced into its own segment/group
+        // so are * & #
         public static List<string> SplitInput(string input)
         {
-            var pattern = @"\d+(?:\*#|\*|#)?";
+            var pattern = @"(\d)\1*|([*#0])";
 
-            return Regex.Matches(input.Trim(), pattern)
+            return Regex.Matches(input, pattern)
                         .Cast<Match>()
                         .Select(m => m.Value)
                         .ToList();
-            
-        }
-        
-        public static string GetNumpadCharacter(string input)
-        {
-            var numpadDictionary = NumpadDictionary();
-            if (numpadDictionary.TryGetValue(input, out string value))
-            {
-                return value;
-            }
-            else
-            {
-                throw new ArgumentException($"The input '{input}' is not a valid numpad input.");
-            }
         }
 
-        private static Dictionary<string, string> NumpadDictionary()
+        // Parses each segment
+        private static (string segment, bool resetFlag) ProcessSegment(List<string> listahan, int segmentIndex)
         {
-            return new Dictionary<string, string>
+            if (segmentIndex >= listahan.Count) return (string.Empty, false);
+
+            var numPadDict = Constants.Constants.NumpadDictionary();
+
+            // given segment, scan for ending.
+            var stringSegment = listahan[segmentIndex];
+
+            // if segment contains
+            if (stringSegment.EndsWith("#") || stringSegment.EndsWith("*#"))
             {
-                { "1", "1" },
-                { "2", "A" },
-                { "22", "B" },
-                { "222", "C" },
-                { "3", "D" },
-                { "33", "E" },
-                { "333", "F" },
-                { "4", "G" },
-                { "44", "H" },
-                { "444", "I" },
-                { "5", "J" },
-                { "55", "K" },
-                { "555", "L" },
-                { "6", "M" },
-                { "66", "N" },
-                { "666", "O" },
-                { "7", "P" },
-                { "77", "Q" },
-                { "777", "R" },
-                { "7777", "S" },
-                { "8", "T" },
-                { "88", "U" },
-                { "888", "V" },
-                { "9", "W" },
-                { "99", "X" },
-                { "999", "Y" },
-                { "9999", "Z" },
-                { "*", "" },
-                { "#", " " },
-                { " ", " " }
-            };
+                var cleaned = CleanSegment(stringSegment);
+                return (TryMatch(cleaned), false);
+            }
+
+            // if * is detected and next one is # eval the whole list
+            if (stringSegment.Equals("*") && segmentIndex + 1 < listahan.Count
+                && listahan[segmentIndex + 1].Equals("#"))
+            {
+                var segments = new StringBuilder();
+                listahan.ForEach(list => segments.Append(list));
+
+                return (TryMatch(segments.ToString()), true);
+
+            }
+
+            if (numPadDict.TryGetValue(stringSegment, out var directMatch))
+                return (directMatch, false);
+
+            throw new ArgumentException();
         }
+
+        // Creates a dictionary of identified delimiters across segments of provided 
+        // input
+        public static Dictionary<int, List<int>> GetDelimeters(List<string> listahan)
+        {
+            var delimeterDict = new Dictionary<int, List<int>>();
+            string[] delimeters = { "*", "#", "*#", "0", " " };
+
+            for (int i = 0; i < listahan.Count; i++)
+            {
+                for (int j = 0; j < listahan[i].Length; j++)
+                {
+                    var letter = listahan[i][j].ToString();
+
+                    if (delimeters.Contains(letter))
+                    {
+                        int segment = i;
+                        int posIndex = j;
+
+                        if (!delimeterDict.ContainsKey(segment))
+                        {
+                            var list = new List<int>();
+                            list.Add(posIndex);
+                            delimeterDict.Add(segment, list);
+                        }
+                        else
+                        {
+                            var segmentList = delimeterDict[segment];
+                            segmentList.Append(posIndex);
+                            delimeterDict[segment] = segmentList;
+                        }
+                    }
+                }
+            }
+
+            return delimeterDict;
+        }
+
+
+        // Attempts to convert numeric sequence into its letter-equivalent
+        // if available.
+        private static string TryMatch(string segment)
+        {
+            var numPadDict = Constants.Constants.NumpadDictionary();
+
+            if (segment.EndsWith("#") || segment.EndsWith("*#"))
+            {
+                var cleaned = CleanSegment(segment);
+
+                return TryMatch(cleaned);
+            }
+
+            if (numPadDict.TryGetValue(segment, out var directMatch))
+            {
+                return directMatch;
+            }
+            else // for *# edge case
+            {
+                const int truncateLimit = 1;
+                var truncated = segment.Substring(0, segment.Length - truncateLimit); // remove 
+
+                numPadDict.TryGetValue(truncated, out var tryMatchAgain);
+
+                return String.IsNullOrEmpty(tryMatchAgain) ? Constants.Constants.KeyWords.UNKNOWN : tryMatchAgain;
+            }
+
+            throw new ArgumentException();
+        }
+
+        // removes delimeters from segment
+        private static string CleanSegment(string segment)
+        {
+            char[] omit = { '*', '#', ' ' };
+            var arr = segment.Where(s => !omit.Contains(s)).ToArray();
+
+            if (string.IsNullOrEmpty(new string(arr)))
+                return string.Empty;
+
+            return new string(arr);
+        }
+        
     }
 }
 
