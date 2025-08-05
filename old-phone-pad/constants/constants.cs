@@ -41,7 +41,8 @@ public class Constants
                 { "999", "Y" },
                 { "9999", "Z" }, // this & below are space delimiters
                 { " ", " " }, // but these aren't allowed at start & end.
-                { "0", " " }  // or a filtered out.
+                { "0", " " },  // or a filtered out.
+                { "", "" }
             };
     }
         

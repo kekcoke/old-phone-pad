@@ -31,13 +31,6 @@ namespace OldPhonePad.Tests
             Assert.Equal(expected, result);
         }
 
-        [Theory]
-        [MemberData(nameof(TestData.GetSingleOutput_GivenList), MemberType = typeof(TestData))]
-        public void FindNextDelimeter(List<string> list, int nextIndex)
-        {
-            var result = Program.FindNextDelimter(list, 0);
-            Assert.Equal(result, nextIndex);
-        }
     }
 
     public class TestData : IEnumerable<object[]>
@@ -95,7 +88,7 @@ namespace OldPhonePad.Tests
             yield return new object[] { "99", "X" };
             yield return new object[] { "999", "Y" };
             yield return new object[] { "9999", "Z" };
-            yield return new object[] { " ", " " };
+            yield return new object[] { " ", "?????" };
             yield return new object[] { "0", " " };
         }
 

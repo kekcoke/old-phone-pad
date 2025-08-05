@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Formats.Asn1;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Markup;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace OldPhonePad 
 {
@@ -51,15 +48,28 @@ namespace OldPhonePad
             {
                 var numpadDictionary = Constants.Constants.NumpadDictionary();
                 var listahan = SplitInput(input);
-                var result = new StringBuilder();
-                var currentIndex = 0;
 
-                while (currentIndex < listahan.Count)
+                if (!listahan[listahan.Count - 1].Contains("#"))
                 {
-                    int nextDelimiterIndex = FindNextDelimter(listahan, currentIndex);
-                    var segmentResult = ProcessSegment(listahan, currentIndex, nextDelimiterIndex);
-                    currentIndex = GetNextStartingIndex(listahan, nextDelimiterIndex);
+                    listahan[listahan.Count - 1] = listahan[listahan.Count - 1] + "#";
+                }
+
+                var result = new StringBuilder();
+                var segmentIndex = 0;
+
+                var delimiters = new Dictionary<int, List<int>>();
+                delimiters = GetDelimeters(listahan);
+
+                while (segmentIndex < listahan.Count)
+                {
+                    List<int> delimiterSegment;
+                    delimiters.TryGetValue(segmentIndex, out delimiterSegment);
+                    var segmentResult = ProcessSegment(listahan, segmentIndex, delimiterSegment);
+                    // segmentIndex = GetNextStartingIndex(listahan, segmentIndex);
                     result = result.Append(segmentResult);
+
+                    delimiters.Remove(segmentIndex);
+                    segmentIndex++;
                 }
 
                 return result.ToString();
@@ -81,119 +91,91 @@ namespace OldPhonePad
                         .ToList();
         }
 
-        private static string ProcessSegment(List<string> listahan, int startIndex, int nextDelimiterIndex)
+        private static string ProcessSegment(List<string> listahan, int segmentIndex, List<int> delimiterIndices)
         {
-            if (startIndex >= listahan.Count) return string.Empty;
+            if (segmentIndex >= listahan.Count) return string.Empty;
 
-            // if it ends in *# then eval whole segment
             var numPadDict = Constants.Constants.NumpadDictionary();
 
-            // process repeat digits. patch fix.
-            if (listahan.Count == 1 && listahan[0].Length < 5)
+            // given segment, scan for ending.
+            var stringSegment = listahan[segmentIndex];
+
+            // if segment contains
+            if (stringSegment.EndsWith("#") || stringSegment.EndsWith("*#"))
             {
-                return numPadDict[listahan[0]];
-            }
-
-            // determine type of delimiter
-            string nextDelimiter = listahan[nextDelimiterIndex];
-
-            if (nextDelimiter == "*" && listahan[nextDelimiterIndex + 1] == "#")
-            {
-                var dict = Constants.Constants.NumpadDictionary;
-                // You can add logic here to process the segment using 'dict'
-                var fullSegment = new StringBuilder();
-
-                for (int i = startIndex; i < nextDelimiterIndex; i++)
-                {
-                    // skip *  acting as in-between letter delimiters
-                    if (listahan[i] == "*") continue;
-
-                    fullSegment.Append(listahan[i]);
-                }
-
-                var fullSegmentStr = fullSegment.ToString();
-                if (numPadDict.ContainsKey(fullSegmentStr))
-                {
-                    return numPadDict[fullSegmentStr];
-                }
-                else
-                {
-                    var truncated = fullSegmentStr.Substring(0, fullSegmentStr.Length - 1);
-
-                    if (numPadDict.ContainsKey(truncated))
-                        return numPadDict[truncated];
-    
-                    return Constants.Constants.KeyWords.UNKNOWN;
-                }
-
-            }
-
-            var bitSegment = new StringBuilder();
-        
-            for (int i = startIndex; i < nextDelimiterIndex; i++)
-            {
-                // skip *  acting as in-between letter delimiters
-                if (listahan[i] == "*") continue;
-
-                bitSegment.Append(listahan[i]);
-            }
-
-            var bitSegmentStr = bitSegment.ToString();
-            if (numPadDict.ContainsKey(bitSegmentStr))
-            {
-                return numPadDict[bitSegmentStr];
-            }
-            else
-            {
-                var truncated = bitSegmentStr.Substring(0, bitSegmentStr.Length - 1);
-
-                if (numPadDict.ContainsKey(truncated))
-                    return numPadDict[truncated];
-    
-                return Constants.Constants.KeyWords.UNKNOWN;
-            }
-
-        }
-
-        public static int FindNextDelimter(List<string> listahan, int startIndex)
-        {
-            string[] delimeters = { "*", "*#", "0", " " };
-
-            if (listahan.Count == 1)
-            {
-                for (int i = 0; i < listahan[0].Length; i++)
-                {
-                    var letter = listahan[0][i].ToString();
-                    if (delimeters.Contains(letter))
-                        return i;
-                }
-
-                return listahan[0].Length;
-            }
-
-            for (int i = startIndex; i < listahan.Count; i++)
-            {
-                if (delimeters.Contains(listahan[i]))
-                    return i;
-            }
-
-            return listahan.Count;
-        }
-
-        private static int GetNextStartingIndex(List<string> listahan, int nextIndex)
-        {
-            if (nextIndex >= listahan.Count)
-            {
-                return listahan.Count;
-            }
-
-            // Check for "*#" pattern
-            if (nextIndex + 1 < listahan.Count && listahan[nextIndex + 1] == "#")
-            {
-                return nextIndex + 2; // Skip both
+                var cleaned = CleanSegment(stringSegment);
+                return TryMatch(cleaned);
             }
             
-            return nextIndex + 1; // Skip "*"
+            // if * is detected and next one is # eval the whole list
+
+
+            if (numPadDict.TryGetValue(stringSegment, out var directMatch))
+                return directMatch;
+
+            throw new ArgumentException();
+        }
+
+        public static Dictionary<int, List<int>> GetDelimeters(List<string> listahan)
+        {
+            var delimeterDict = new Dictionary<int, List<int>>();
+            string[] delimeters = { "*", "#", "*#", "0", " " };
+
+            for (int i = 0; i < listahan.Count; i++)
+            {
+                for (int j = 0; j < listahan[i].Length; j++)
+                {
+                    var letter = listahan[i][j].ToString();
+
+                    if (delimeters.Contains(letter))
+                    {
+                        int segment = i;
+                        int posIndex = j;
+
+                        if (!delimeterDict.ContainsKey(segment))
+                        {
+                            var list = new List<int>();
+                            list.Add(posIndex);
+                            delimeterDict.Add(segment, list);
+                        }
+                        else
+                        {
+                            var segmentList = delimeterDict[segment];
+                            segmentList.Append(posIndex);
+                            delimeterDict[segment] = segmentList;
+                        }
+                    }
+                }
+            }
+
+            return delimeterDict;
+        }
+
+        private static string TryMatch(string segment)
+        {
+            var numPadDict = Constants.Constants.NumpadDictionary();
+
+            if (segment.EndsWith("#") || segment.EndsWith("*#"))
+            {
+                var cleaned = CleanSegment(segment);
+                return TryMatch(cleaned);
+            }
+
+            if (numPadDict.TryGetValue(segment, out var directMatch))
+                    return directMatch;
+
+            throw new ArgumentException();
+        }
+
+        private static string CleanSegment(string segment)
+        {
+            char[] omit = { '*', '#', ' ' };
+            var arr = segment.Where(s => !omit.Contains(s)).ToArray();
+
+            if (string.IsNullOrEmpty(new string(arr)))
+                return string.Empty;
+
+            return new string(arr);
         }
         
     }

@@ -6,20 +6,17 @@ public class Helpers
 {
     public static bool IsAllRepeatedDigits(string val)
     {
-        char first = val[0];
+        var sample = val.StartsWith("-") ? val.Remove(0) : val;
 
-        foreach (char digit in val)
+        if (string.IsNullOrEmpty(sample)) return false;
+
+        char first = sample[0];
+
+        foreach (char digit in sample)
         {
             if (digit != first) return false;
         }
 
         return true;
-    }
-
-    public static bool IsValidT9Pattern(int val)
-    {
-        var regex = new Regex(@"");
-
-        return regex.IsMatch(val.ToString());
     }
 }
